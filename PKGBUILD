@@ -2,9 +2,8 @@
 # Maintainer: Arjix <me@arjix.dev>
 # Maintainer: Aurelle <gh@aurelle.dev>
 
-# shellcheck disable=SC2034
-# shellcheck disable=SC2154
-# shellcheck disable=SC2128
+# shellcheck disable=SC2034,SC2154,SC2128,SC2128,SC2164
+
 pkgname=vicinae-bin
 pkgver=0.21.0
 pkgrel=3
@@ -40,6 +39,17 @@ sha256sums=('d19099a094507184fcf9388e85ef74839a99fc3666b41bd6cc3bf116e1b01ca9'
 prepare() {
   mkdir -p vicinae
   tar -xzf "vicinae-${arch}-v${pkgver}-${pkgrel}.tgz" -C vicinae
+
+  mv vicinae/share/vicinae/native-host/*.in "$srcdir"
+  rm -rf vicinae/share/vicinae/native-host
+
+  mv com.vicinae.vicinae.chromium.json{.in,}
+  mv com.vicinae.vicinae.firefox.json{.in,}
+
+  sed -i \
+    -e 's|@NATIVE_HOST_BIN@|/usr/libexec/vicinae/vicinae-browser-link|' \
+    -e 's|@CHROME_EXTENSION_ID@|kcmipingpfbohfjckomimmahknoddnke|' \
+    ./*.json
 }
 
 package() {
@@ -48,11 +58,9 @@ package() {
     cp -a "$item" "$pkgdir/usr/"
   done
 
-  find "$pkgdir/usr/" -type f -name '*.in' -delete
-
   # have to be installed manually due to non standard locations
-  install -Dm644 ./vicinae/share/vicinae/native-host/chromium/com.vicinae.vicinae.json "$pkgdir/etc/chromium/native-messaging-hosts/com.vicinae.vicinae.json"
-  install -Dm644 ./vicinae/share/vicinae/native-host/firefox/com.vicinae.vicinae.json "$pkgdir/usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json"
+  install -Dm644 "$srcdir"/com.vicinae.vicinae.chromium.json "$pkgdir/etc/chromium/native-messaging-hosts/com.vicinae.vicinae.json"
+  install -Dm644 "$srcdir"/com.vicinae.vicinae.firefox.json "$pkgdir/usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json"
 
   # Pacman hook
   install -Dm644 "$srcdir/${pkgname%-bin}.hook" "$pkgdir/usr/share/libalpm/hooks/${pkgname%-bin}.hook"
