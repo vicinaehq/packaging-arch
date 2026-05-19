@@ -1,0 +1,4 @@
+Host aur.archlinux.org
+  IdentityFile ~/.ssh/aur
+  StrictHostKeychecking no
+  User aur

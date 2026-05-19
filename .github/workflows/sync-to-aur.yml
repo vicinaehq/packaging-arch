@@ -25,12 +25,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "$AUR_SSH_KEY" > ~/.ssh/aur
           chmod 600 ~/.ssh/aur
-          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
-          cat >> ~/.ssh/config <<EOF
-          Host aur.archlinux.org
-            IdentityFile ~/.ssh/aur
-            User aur
-          EOF
+          cp .github/ssh_config ~/.ssh/config
+          chmod 600 ~/.ssh/config
 
       - name: Sync to AUR
         run: bash .github/scripts/sync-to-aur.sh --push
