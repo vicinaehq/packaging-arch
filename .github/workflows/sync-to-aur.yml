@@ -21,10 +21,14 @@ jobs:
       - name: Setup SSH
         env:
           AUR_SSH_KEY: "${{ secrets.AUR_SSH_KEY }}"
+          AUR_SSH_KEY_PUB: "${{ secrets.AUR_SSH_KEY_PUB }}"
         run: |
           mkdir -p ~/.ssh
-          echo "$AUR_SSH_KEY" > ~/.ssh/aur
+
+          echo -n "$AUR_SSH_KEY" > ~/.ssh/aur
+          echo -n "$AUR_SSH_KEY_PUB" > ~/.ssh/aur.pub
           chmod 600 ~/.ssh/aur
+
           cp .github/ssh_config ~/.ssh/config
           chmod 600 ~/.ssh/config
 
