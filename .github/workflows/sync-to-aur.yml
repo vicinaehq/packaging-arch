@@ -25,8 +25,8 @@ jobs:
         run: |
           mkdir -p ~/.ssh
 
-          echo -n "$AUR_SSH_KEY" > ~/.ssh/aur
-          echo -n "$AUR_SSH_KEY_PUB" > ~/.ssh/aur.pub
+          echo "$AUR_SSH_KEY" > ~/.ssh/aur
+          echo "$AUR_SSH_KEY_PUB" > ~/.ssh/aur.pub
           chmod 600 ~/.ssh/aur
 
           cp .github/ssh_config ~/.ssh/config
