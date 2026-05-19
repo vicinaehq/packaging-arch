@@ -2,6 +2,14 @@ name: Sync to AUR
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - vicinae
+      - vicinae-appimage-bin
+      - vicinae-bin
+      - vicinae-git
+    paths:
+      - .SRCINFO
 
 jobs:
   sync:
