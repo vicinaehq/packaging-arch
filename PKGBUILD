@@ -1,12 +1,13 @@
 # Maintainer: cilgin <cilgincc@outlook.com>
 # Maintainer: Arjix <me@arjix.dev>
+# Maintainer: Aurelle <gh@aurelle.dev>
 
 # shellcheck disable=SC2034
 # shellcheck disable=SC2154
 # shellcheck disable=SC2128
 pkgname=vicinae-bin
 pkgver=0.21.0
-pkgrel=2
+pkgrel=3
 pkgdesc="Raycast like FOSS app on Linux"
 arch=('x86_64')
 url="https://github.com/vicinaehq/vicinae"
