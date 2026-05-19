@@ -48,9 +48,11 @@ package() {
     cp -a "$item" "$pkgdir/usr/"
   done
 
+  find "$pkgdir/usr/" -type f -name '*.in' -delete
+
   # have to be installed manually due to non standard locations
-  install -Dm644 ./vicinae/share/native-host/chromium/com.vicinae.vicinae.json "$pkgdir/etc/chromium/native-messaging-hosts/com.vicinae.vicinae.json"
-  install -Dm644 ./vicinae/share/native-host/firefox/com.vicinae.vicinae.json "$pkgdir/usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json"
+  install -Dm644 ./vicinae/share/vicinae/native-host/chromium/com.vicinae.vicinae.json "$pkgdir/etc/chromium/native-messaging-hosts/com.vicinae.vicinae.json"
+  install -Dm644 ./vicinae/share/vicinae/native-host/firefox/com.vicinae.vicinae.json "$pkgdir/usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json"
 
   # Pacman hook
   install -Dm644 "$srcdir/${pkgname%-bin}.hook" "$pkgdir/usr/share/libalpm/hooks/${pkgname%-bin}.hook"
