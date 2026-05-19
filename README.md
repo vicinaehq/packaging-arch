@@ -1,6 +1,6 @@
 # vicinae-aur
 
-AUR packages for [vicinae](https://github.com/vicinae/vicinae). Each package lives on its own branch.
+AUR packages for [vicinae](https://github.com/vicinaehq/vicinae). Each package lives on its own branch.
 
 | Package | Branch | AUR |
 |---------|--------|-----|
