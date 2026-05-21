@@ -31,10 +31,12 @@ noextract=("vicinae-${arch}-v${pkgver}-${pkgrel}.tgz")
 source=(
   "vicinae-${arch}-v${pkgver}-${pkgrel}.tgz::${url}/releases/download/v${pkgver}/${pkgname%-bin}-linux-${arch}-v${pkgver}.tar.gz"
   "vicinae.hook"
+  "99-vicinae.rules"
 )
 
 sha256sums=('d19099a094507184fcf9388e85ef74839a99fc3666b41bd6cc3bf116e1b01ca9'
-            '7b4715a9b3b25c55255824b171780dbb760406cb43ea8e3622bb9de867fd0ec7')
+            '7b4715a9b3b25c55255824b171780dbb760406cb43ea8e3622bb9de867fd0ec7'
+            '85abd3fb5c0351281a3e4a6001f138c251d791c92c0c45baf984fefa1bdb58c7')
 
 prepare() {
   mkdir -p vicinae
@@ -61,6 +63,12 @@ package() {
   # have to be installed manually due to non standard locations
   install -Dm644 "$srcdir"/com.vicinae.vicinae.chromium.json "$pkgdir/etc/chromium/native-messaging-hosts/com.vicinae.vicinae.json"
   install -Dm644 "$srcdir"/com.vicinae.vicinae.firefox.json "$pkgdir/usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json"
+
+  # udev rules
+  install -Dm644 "$srcdir/99-${pkgname%-bin}.rules" "$pkgdir/usr/lib/udev/rules.d/99-${pkgname%-bin}.rules"
+
+  chown root:input "$pkgdir/usr/libexec/vicinae/vicinae-input-server"
+  chmod 2755 "$pkgdir/usr/libexec/vicinae/vicinae-input-server"
 
   # Pacman hook
   install -Dm644 "$srcdir/${pkgname%-bin}.hook" "$pkgdir/usr/share/libalpm/hooks/${pkgname%-bin}.hook"
