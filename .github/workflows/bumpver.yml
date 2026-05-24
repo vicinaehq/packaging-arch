@@ -31,28 +31,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fix workspace ownership
-        run: chown -R builder:builder "${{ github.workspace }}"
-
-      - name: Checkout package branch and configure git identity
+      - name: Fix ownership and configure git
         working-directory: "${{ github.workspace }}"
         run: |
-          actual_workspace="$(pwd)"
+          ws="$(pwd)"
+          chown -R builder:builder "$ws"
           su builder -c "
-            git config --global --add safe.directory '$actual_workspace'
-            git -C '$actual_workspace' checkout --track 'origin/${{ matrix.package }}'
-            git -C '$actual_workspace' config user.name 'github-actions[bot]'
-            git -C '$actual_workspace' config user.email 'github-actions[bot]@users.noreply.github.com'
+            git config --global --add safe.directory '$ws'
+            git -C '$ws' checkout --track 'origin/${{ matrix.package }}'
+            git -C '$ws' config user.name 'github-actions[bot]'
+            git -C '$ws' config user.email 'github-actions[bot]@users.noreply.github.com'
           "
 
       - name: Run bumpver script
         id: bump
         working-directory: "${{ github.workspace }}"
         run: |
+          ws="$(pwd)"
           set +e
           output=$(su builder -c "
-            cd '${{ github.workspace }}'
-            git show origin/main:bumpver/${{ matrix.package }}.sh | bash
+            git -C '$ws' show origin/main:bumpver/${{ matrix.package }}.sh | bash
           " 2>&1)
           exit_code=$?
           echo "$output"
