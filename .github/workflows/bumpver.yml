@@ -6,7 +6,9 @@ on:
 jobs:
   bump:
     runs-on: ubuntu-latest
-    container: archlinux/archlinux:base-devel
+    container:
+      image: archlinux/archlinux:base-devel
+      options: --user root
     strategy:
       matrix:
         package: [vicinae, vicinae-bin, vicinae-appimage-bin]
@@ -15,32 +17,50 @@ jobs:
       contents: write
 
     steps:
-      - name: Install tools
+      - name: Install tools and create build user
         run: |
           pacman-key --init
-          pacman -Sy --noconfirm git curl jq pacman-contrib
+          pacman -Sy --noconfirm git curl jq pacman-contrib sudo
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
       - name: init workspace
-        run: mkdir -p "${{ github.workspace }}"
+        run: |
+          mkdir -p "${{ github.workspace }}"
+          chown -R builder:builder "${{ github.workspace }}"
 
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Fix workspace ownership
+        run: chown -R builder:builder "${{ github.workspace }}" /tmp
+
       - name: Configure git
-        working-directory: "${{ github.workspace }}"
         run: |
           git config --global --add safe.directory '*'
-          git checkout --track "origin/${{ matrix.package }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+        # Safe directory must be set globally before su'ing, since
+        # the builder user inherits a different HOME
+
+      - name: Checkout package branch and configure git identity
+        working-directory: "${{ github.workspace }}"
+        run: |
+          su builder -c "
+            git config --global --add safe.directory '${{ github.workspace }}'
+            git checkout --track 'origin/${{ matrix.package }}'
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+          "
 
       - name: Run bumpver script
         id: bump
         working-directory: "${{ github.workspace }}"
         run: |
           set +e
-          output=$(git show origin/main:bumpver/${{ matrix.package }}.sh | bash 2>&1)
+          output=$(su builder -c "
+            cd '${{ github.workspace }}'
+            git show origin/main:bumpver/${{ matrix.package }}.sh | bash
+          " 2>&1)
           exit_code=$?
           echo "$output"
           if [[ $exit_code -ne 0 ]]; then
