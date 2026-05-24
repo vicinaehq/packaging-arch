@@ -25,22 +25,14 @@ jobs:
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
       - name: init workspace
-        run: |
-          mkdir -p "${{ github.workspace }}"
-          chown -R builder:builder "${{ github.workspace }}"
+        run: mkdir -p "${{ github.workspace }}"
 
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Fix workspace ownership
-        run: chown -R builder:builder "${{ github.workspace }}" /tmp
-
-      - name: Configure git
-        run: |
-          git config --global --add safe.directory '*'
-        # Safe directory must be set globally before su'ing, since
-        # the builder user inherits a different HOME
+        run: chown -R builder:builder "${{ github.workspace }}"
 
       - name: Checkout package branch and configure git identity
         working-directory: "${{ github.workspace }}"
