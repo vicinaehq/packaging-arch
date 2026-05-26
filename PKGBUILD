@@ -1,6 +1,7 @@
 # Maintainer: cilgin <cilgincc@outlook.com>
 # Maintainer: Arjix <me@arjix.dev>
 # Maintainer: Aurelle <gh@aurelle.dev>
+# Contributor: enchanteddev <code.enchanted@gmail.com>
 
 # shellcheck disable=SC2034,SC2154,SC2128,SC2128,SC2164
 
