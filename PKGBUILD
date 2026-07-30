@@ -1,14 +1,14 @@
 # Maintainer: cilgin <cilgincc@outlook.com>
 # Maintainer: Arjix <me@arjix.dev>
-# Maintainer: Aurelle <gh@aurelle.dev>
+# Maintainer: Aurelle <aur@aurelle.dev>
 # Contributor: enchanteddev <code.enchanted@gmail.com>
 
-# shellcheck disable=SC2034,SC2154,SC2128,SC2128,SC2164
+# shellcheck disable=SC2034,SC2154,SC2128,SC2164
 
 pkgname=vicinae-bin
-pkgver=0.21.2
-pkgrel=2
-pkgdesc="Raycast like FOSS app on Linux"
+pkgver=0.24.0
+pkgrel=1
+pkgdesc="A focused launcher for your desktop — native, fast, extensible"
 arch=('x86_64')
 url="https://github.com/vicinaehq/vicinae"
 license=('GPL3')
@@ -20,10 +20,9 @@ depends=(
   layer-shell-qt
   libqalculate
   qtkeychain-qt6
-  libxml2
-  minizip
   syntax-highlighting
 )
+makedepends=("sed")
 install=vicinae-bin.install
 provides=("vicinae")
 conflicts=("vicinae")
@@ -35,24 +34,12 @@ source=(
   "99-vicinae.rules"
 )
 
-sha256sums=('686d5b5b961c4551ff6aff95d7b31c19dafbe29d672ac9b62e1159816b3045bd'
-            '7b4715a9b3b25c55255824b171780dbb760406cb43ea8e3622bb9de867fd0ec7'
-            '85abd3fb5c0351281a3e4a6001f138c251d791c92c0c45baf984fefa1bdb58c7')
+sha256sums=('015a1ef2f8b23ea36a3f831a41de2d138f927cf45c987f62de3ec4add8dbafe7'
+            '03f23ea908d2426070d7cc9b2c3e9f5b1ceb566e3bd6c5c9cebeb42f1759f92b')
 
 prepare() {
   mkdir -p vicinae
   tar -xzf "vicinae-${arch}-v${pkgver}-${pkgrel}.tgz" -C vicinae
-
-  mv vicinae/share/vicinae/native-host/*.in "$srcdir"
-  rm -rf vicinae/share/vicinae/native-host
-
-  mv com.vicinae.vicinae.chromium.json{.in,}
-  mv com.vicinae.vicinae.firefox.json{.in,}
-
-  sed -i \
-    -e 's|@NATIVE_HOST_BIN@|/usr/libexec/vicinae/vicinae-browser-link|' \
-    -e 's|@CHROME_EXTENSION_ID@|kcmipingpfbohfjckomimmahknoddnke|' \
-    ./*.json
 }
 
 package() {
@@ -61,16 +48,9 @@ package() {
     cp -a "$item" "$pkgdir/usr/"
   done
 
-  # have to be installed manually due to non standard locations
-  install -Dm644 "$srcdir"/com.vicinae.vicinae.chromium.json "$pkgdir/etc/chromium/native-messaging-hosts/com.vicinae.vicinae.json"
-  install -Dm644 "$srcdir"/com.vicinae.vicinae.firefox.json "$pkgdir/usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json"
-
   # udev rules
   install -Dm644 "$srcdir/99-${pkgname%-bin}.rules" "$pkgdir/usr/lib/udev/rules.d/99-${pkgname%-bin}.rules"
-
   chown root:input "$pkgdir/usr/libexec/vicinae/vicinae-input-server"
   chmod 2755 "$pkgdir/usr/libexec/vicinae/vicinae-input-server"
-
-  # Pacman hook
   install -Dm644 "$srcdir/${pkgname%-bin}.hook" "$pkgdir/usr/share/libalpm/hooks/${pkgname%-bin}.hook"
 }
