@@ -3,12 +3,13 @@
 # and notify the server when a snippet needs to be expanded.
 
 post_install() {
-  setcap "cap_dac_override+ep" /usr/libexec/vicinae/vicinae-input-server
-
-  # required for input injection through /dev/uinput. 
+  # required for input injection through /dev/uinput.
   # Since, v0.20.3, we install a file under $prefix/lib/modules-load.d/vicinae.conf already, but it will only be considered after a reboot.
   # So this is to make sure the module is loaded right away.
   modprobe uinput || echo "Failed to modprobe uinput: snippets and paste may not work, or only after a reboot.";
+
+  # applies udev rules if /dev/uinput already exists
+  udevadm trigger --property-match=DEVNAME=/dev/uinput
 }
 
 post_upgrade() {

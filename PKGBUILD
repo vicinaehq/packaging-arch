@@ -1,6 +1,7 @@
 # Maintainer: cilgin <cilgincc@outlook.com>
 # Maintainer: Arjix <me@arjix.dev>
 # Maintainer: Aurelle <aur@aurelle.dev>
+# Contributor: enchanteddev <code.enchanted@gmail.com>
 
 # shellcheck disable=SC2034,SC2154,SC2128,SC2164
 
@@ -30,6 +31,7 @@ noextract=("vicinae-${arch}-v${pkgver}-${pkgrel}.tgz")
 source=(
   "vicinae-${arch}-v${pkgver}-${pkgrel}.tgz::${url}/releases/download/v${pkgver}/${pkgname%-bin}-linux-${arch}-v${pkgver}.tar.gz"
   "vicinae.hook"
+  "99-vicinae.rules"
 )
 
 sha256sums=('4bc9ad954742a48a771e0b5d2dbcff85091c6215aa655405ab576566047b5488'
@@ -46,6 +48,9 @@ package() {
     cp -a "$item" "$pkgdir/usr/"
   done
 
-  # Pacman hook
+  # udev rules
+  install -Dm644 "$srcdir/99-${pkgname%-bin}.rules" "$pkgdir/usr/lib/udev/rules.d/99-${pkgname%-bin}.rules"
+  chown root:input "$pkgdir/usr/libexec/vicinae/vicinae-input-server"
+  chmod 2755 "$pkgdir/usr/libexec/vicinae/vicinae-input-server"
   install -Dm644 "$srcdir/${pkgname%-bin}.hook" "$pkgdir/usr/share/libalpm/hooks/${pkgname%-bin}.hook"
 }
